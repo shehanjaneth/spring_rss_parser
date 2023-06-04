@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>RSS Parser</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js" integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link th:href="@{style.css}" rel="stylesheet" />
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <script>
+        function loadRssFeeds() {
+            const size = document.getElementById('size');
+            fetch('http://localhost:8080/items?size='+ size.value)
+              .then(response => response.json())
+              .then(data => {
+                const itemListElement = document.getElementById('itemList');
+                while (itemListElement.hasChildNodes()) {
+                    itemListElement.removeChild(list.firstChild);
+                }
+                data.results.forEach(item => {
+                  const li = document.createElement('li');
+                  const img = document.createElement('img');
+                  img.src = "../icon.png";
+                  img.alt = "-";
+
+                  li.appendChild(img);
+                  li.appendChild(document.createTextNode(item.title));
+                  itemListElement.appendChild(li);
+                });
+              })
+              .catch(error => console.log(error));
+        }
+    </script>
+    <script>
+        function createNewFeed() {
+            var titleText = document.getElementById('title').value;
+            var publicationDateText = document.getElementById('publicationDate').value;
+            var descriptionText = document.getElementById('description').value;
+            var urlText = document.getElementById('url').value;
+            var data = {title: titleText, publicationDate: publicationDateText, description:descriptionText, url: urlText};
+            fetch('http://localhost:8080/item/save', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify(data)
+                    });
+            document.getElementById('create-modal').style.display='none';
+            loadRssFeeds();
+        }
+    </script>
+    <script>
+        function pollForFeed() {
+            var rssFeedId = sessionStorage.getItem("poll-rssFeedId");
+            var name = document.getElementById('user-name').value;
+            fetch('http://localhost:8080/vote/'+rssFeedId+'/'+name, { method: 'POST'});
+            document.getElementById("poll-text").innerHTML = "Submitted";
+            document.getElementById('poll-modal').style.display='none';
+        }
+    </script>
+    <script>
+        function webListener() {
+            var socket = new SockJS('/websocket');
+            var stompClient = Stomp.over(socket);
+
+            stompClient.connect({}, function (frame) {
+                console.log('Connected: ' + frame);
+
+                stompClient.subscribe('/rss/notifications', function (notification) {
+                    console.log(notification);
+                    var type = JSON.parse(notification.body).type;
+                    var source = JSON.parse(notification.body).source;
+                    if(type == "POLL"){
+                        document.getElementById("poll-text").innerHTML = "Do you like " + source.title;
+                        sessionStorage.setItem("poll-rssFeedId", source.rssFeedId);
+                        document.getElementById('create-modal').style.display='none';
+                        document.getElementById('poll-modal').style.display='block';
+                    }else{
+                        document.getElementById('poll-modal').style.display='none';
+                        document.getElementById('create-modal').style.display='block';
+                    }
+                });
+            });
+        }
+    </script>
+    <script>
+        function onLoadFunction() {
+            webListener();
+            document.getElementById('poll-modal').style.display='none';
+            document.getElementById('create-modal').style.display='none';
+        }
+    </script>
+</head>
+<body onload="onLoadFunction()">
+    <div class="container">
+        <div class="header-bar">
+            <img src="../banner.png" alt="The Gifted Company AB" class="fit" >
+        </div>
+        <div id="poll-modal" class="w3-modal">
+            <div class="w3-modal-content w3-card-4">
+                <div class="w3-container">
+                    <p id="poll-text"></p><br>
+                    <label for="user-name">Name</label>
+                    <input type="text" id="user-name" name="user-name">
+                </div>
+                <footer class="w3-container w3-teal">
+                    <button onclick="pollForFeed()" class="buttondiv">Yes</button>
+                    <button onclick="document.getElementById('poll-modal').style.display='none'" class="buttondiv">No</button>
+                </footer>
+            </div>
+        </div>
+        <div id="create-modal" class="w3-modal">
+            <div class="w3-modal-content w3-card-4">
+                <div class="w3-container">
+                    <div>
+                            <label for="title">Title</label>
+                            <input type="text" id="title" name="title"><br>
+                            <label for="description">Description</label>
+                            <input type="text" id="description" name="description"><br><br>
+                            <label for="publicationDate">Publication Date</label>
+                            <input type="date" id="publicationDate" name="publicationDate"><br><br>
+                            <label for="url">Url</label>
+                            <input type="text" id="url" name="url"><br><br>
+                            <button onclick="createNewFeed()" class="buttondiv">Submit</button>
+                    </div>
+                </div>
+                <footer class="w3-container">
+                    <button onclick="document.getElementById('create-modal').style.display='none'" class="buttondiv">Close</button>
+                </footer>
+            </div>
+        </div>
+        <h1 class="title">Top RSS Feeds</h1>
+        <ul id="itemList"></ul>
+        <div>
+            <button onclick="loadRssFeeds()" class="buttondiv">Update Feed</button>
+        </div>
+        <div  class="selectdiv">
+            <select id="size" onchange="loadRssFeeds()">
+                <option>5</option>
+                <option selected >10</option>
+                <option>15</option>
+            </select>
+        </div>
+
+
+    </div>
+</body>
+</html>

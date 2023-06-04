@@ -1,0 +1,110 @@
+.fit {
+    max-width: 15%;
+    min-width: 5%;
+    display: block;
+    padding: 5px;
+}
+
+.container{
+    margin: 20px;
+}
+
+.header-bar{
+    margin: -20px;
+    background: #40128B;
+}
+
+body {
+    margin: 0;
+    height: 100%;
+    background-repeat: no-repeat;
+    opacity: 1;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    background: -webkit-linear-gradient( to left bottom, #40128B,  #DD58D6);
+    background: -moz-linear-gradient( to left bottom, #40128B,  #DD58D6);
+    background: -ms-linear-gradient( to left bottom, #40128B,  #DD58D6);
+    background: -o-linear-gradient( to left bottom, #40128B,  #DD58D6);
+    background: linear-gradient( to left bottom, #40128B,  #DD58D6);
+}
+
+.title{
+    margin-top: 20px;
+    font: 30px "Consolas", monospace;
+    color: #40128B;
+}
+
+/* Update Button */
+
+.buttondiv {
+    display:inline-block;
+    font: 17px "Consolas", monospace;
+    border-radius: 15px;
+    position: relative;
+    bottom: 0;
+    margin: 10px 33%;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    display: block;
+    width: 100%;
+    max-width: 100px;
+    height: 50px;
+    color: #333;
+    background-color: #ffffff;
+    background-image: none;
+    border: 1px solid #cccccc;
+    -ms-word-break: normal;
+    word-break: normal;
+    text-align: center;
+}
+
+
+/* Drop Down */
+
+.selectdiv {
+    border-radius: 15px;
+    position: relative;
+    bottom: 0;
+    min-width: 100px;
+    margin: 10px 33%;
+}
+
+.selectdiv:after {
+    content: '<>';
+    font: 17px "Consolas", monospace;
+    color: #333;
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    transform: rotate(90deg);
+    right: 11px;
+    top: 18px;
+    padding: 0 0 2px;
+    border-bottom: 1px solid #999;
+    position: absolute;
+    pointer-events: none;
+}
+
+.selectdiv select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    display: block;
+    width: 100%;
+    max-width: 100px;
+    height: 50px;
+    float: right;
+    margin: 5px 0px;
+    padding: 0px 24px;
+    font-size: 16px;
+    line-height: 1.75;
+    color: #333;
+    background-color: #ffffff;
+    background-image: none;
+    border: 1px solid #cccccc;
+    -ms-word-break: normal;
+    word-break: normal;
+}
